@@ -42,16 +42,67 @@ export function registerRoutes(app: Express) {
     try {
       const { content, contentType, type, difficulty, level, numQuestions } = req.body;
       
-      // Validate required fields
-      if (!content || !contentType || !type || !difficulty || !level || !numQuestions) {
-        return res.status(400).json({ 
-          error: "Missing required fields", 
-          details: "All fields are required: content, contentType, type, difficulty, level, numQuestions" 
+      // Validate required fields and their types
+      const requiredFields = {
+        content: content,
+        contentType: contentType,
+        type: type,
+        difficulty: difficulty,
+        level: level,
+        numQuestions: numQuestions
+      };
+
+      // Check for missing fields
+      const missingFields = Object.entries(requiredFields)
+        .filter(([_, value]) => !value)
+        .map(([key]) => key);
+
+      if (missingFields.length > 0) {
+        return res.status(400).json({
+          error: "Missing required fields",
+          details: `Missing fields: ${missingFields.join(', ')}`
+        });
+      }
+
+      // Validate field values
+      if (!['text', 'document', 'image'].includes(contentType)) {
+        return res.status(400).json({
+          error: "Invalid content type",
+          details: "Content type must be one of: text, document, image"
+        });
+      }
+
+      if (!['multiple-choice', 'true-false', 'fill-blank'].includes(type)) {
+        return res.status(400).json({
+          error: "Invalid quiz type",
+          details: "Quiz type must be one of: multiple-choice, true-false, fill-blank"
+        });
+      }
+
+      if (!['easy', 'medium', 'hard'].includes(difficulty)) {
+        return res.status(400).json({
+          error: "Invalid difficulty",
+          details: "Difficulty must be one of: easy, medium, hard"
+        });
+      }
+
+      if (!['elementary', 'middle', 'high', 'university'].includes(level)) {
+        return res.status(400).json({
+          error: "Invalid academic level",
+          details: "Level must be one of: elementary, middle, high, university"
+        });
+      }
+
+      const parsedNumQuestions = parseInt(numQuestions);
+      if (isNaN(parsedNumQuestions) || parsedNumQuestions < 1 || parsedNumQuestions > 50) {
+        return res.status(400).json({
+          error: "Invalid number of questions",
+          details: "Number of questions must be between 1 and 50"
         });
       }
 
       // Generate quiz questions using content
-      const questions = Array.from({ length: numQuestions }, (_, index) => ({
+      const questions = Array.from({ length: parsedNumQuestions }, (_, index) => ({
         question: `Sample Question ${index + 1} from ${content.substring(0, 50)}...`,
         options: ["Option A", "Option B", "Option C", "Option D"],
         correctAnswer: "Option A"

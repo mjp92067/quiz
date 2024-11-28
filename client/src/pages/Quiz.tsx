@@ -97,13 +97,19 @@ export function Quiz() {
   const generateQuiz = useMutation({
     mutationFn: async (data: QuizFormData) => {
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value instanceof File) {
-          formData.append(key, value);
-        } else {
-          formData.append(key, String(value));
-        }
-      });
+      
+      // Add all required fields
+      formData.append('content', data.content);
+      formData.append('contentType', data.contentType);
+      formData.append('type', data.type);
+      formData.append('difficulty', data.difficulty);
+      formData.append('level', data.level);
+      formData.append('numQuestions', String(data.numQuestions));
+      
+      // Add file if present
+      if (data.file) {
+        formData.append('file', data.file);
+      }
 
       const response = await fetch("/api/quiz/generate", {
         method: "POST",
