@@ -56,16 +56,16 @@ export function registerRoutes(app: Express) {
       } : null
     });
     try {
-      const { content, contentType: content_type, type, difficulty, level, numQuestions: num_questions } = req.body;
+      const { content, contentType, type, difficulty, level, numQuestions } = req.body;
       
       // Validate required fields and their types
       const requiredFields = {
         content: content,
-        content_type: content_type,
+        contentType: contentType,
         type: type,
         difficulty: difficulty,
         level: level,
-        num_questions: num_questions
+        numQuestions: numQuestions
       };
 
       // Check for missing fields
@@ -81,7 +81,7 @@ export function registerRoutes(app: Express) {
       }
 
       // Validate field values
-      if (!['text', 'document', 'image'].includes(content_type)) {
+      if (!['text', 'document', 'image'].includes(contentType)) {
         return res.status(400).json({
           error: "Invalid content type",
           details: "Content type must be one of: text, document, image"
@@ -128,15 +128,15 @@ export function registerRoutes(app: Express) {
       const quiz = await db.insert(quizzes).values({
         userId: req.user?.id,
         content,
-        content_type,
+        contentType,
         type,
         difficulty,
         level,
-        num_questions: parseInt(num_questions),
+        numQuestions: parsedNumQuestions,
         questions: JSON.stringify(questions),
-        is_public: false,
-        total_attempts: 0,
-        updated_at: new Date()
+        isPublic: false,
+        totalAttempts: 0,
+        updatedAt: new Date()
       }).returning();
 
       res.json({
@@ -194,7 +194,8 @@ export function registerRoutes(app: Express) {
       const quiz = await db.update(quizzes)
         .set({ 
           isPublic: true, 
-          shareCode
+          shareCode,
+          updatedAt: new Date()
         })
         .where(eq(quizzes.id, quizId))
         .returning();
@@ -260,7 +261,7 @@ export function registerRoutes(app: Express) {
       }).returning();
       
       await db.update(quizzes)
-        .set({ totalAttempts: sql`total_attempts + 1` })
+        .set({ totalAttempts: sql`total_attempts + 1`, updatedAt: new Date() })
         .where(eq(quizzes.id, parseInt(req.params.quizId)));
       
       res.json(entry[0]);
