@@ -152,6 +152,123 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Friend system routes
+  app.post("/api/friends/request", async (req, res) => {
+    try {
+      const { friendId } = req.body;
+      
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      // Check if friend request already exists
+      const existingRequest = await db.query.friends.findFirst({
+        where: sql`(user_id = ${req.user.id} AND friend_id = ${friendId}) 
+                  OR (user_id = ${friendId} AND friend_id = ${req.user.id})`
+      });
+
+      if (existingRequest) {
+        return res.status(400).json({ 
+          error: "Friend request already exists",
+          status: existingRequest.status
+        });
+      }
+
+      // Create friend request
+      const request = await db.insert(friends).values({
+        userId: req.user.id,
+        friendId: friendId,
+        status: "pending"
+      }).returning();
+
+      res.json(request[0]);
+    } catch (error) {
+      res.status(500).json({ error: "Error sending friend request" });
+    }
+  });
+
+  app.post("/api/friends/respond", async (req, res) => {
+    try {
+      const { requestId, accept } = req.body;
+      
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      // Update friend request status
+      const request = await db.update(friends)
+        .set({ 
+          status: accept ? "accepted" : "rejected",
+          updatedAt: new Date()
+        })
+        .where(sql`id = ${requestId} AND friend_id = ${req.user.id} AND status = 'pending'`)
+        .returning();
+
+      if (request.length === 0) {
+        return res.status(404).json({ error: "Friend request not found" });
+      }
+
+      res.json(request[0]);
+    } catch (error) {
+      res.status(500).json({ error: "Error responding to friend request" });
+    }
+  });
+
+  app.get("/api/friends", async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      // Get all accepted friends
+      const friendsList = await db.query.friends.findMany({
+        where: sql`(user_id = ${req.user.id} OR friend_id = ${req.user.id}) 
+                  AND status = 'accepted'`,
+        with: {
+          user: {
+            columns: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true
+            }
+          }
+        }
+      });
+
+      res.json(friendsList);
+    } catch (error) {
+      res.status(500).json({ error: "Error fetching friends list" });
+    }
+  });
+
+  app.get("/api/friends/requests", async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      // Get pending friend requests
+      const requests = await db.query.friends.findMany({
+        where: sql`friend_id = ${req.user.id} AND status = 'pending'`,
+        with: {
+          user: {
+            columns: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true
+            }
+          }
+        }
+      });
+
+      res.json(requests);
+    } catch (error) {
+      res.status(500).json({ error: "Error fetching friend requests" });
+    }
+  });
+
   app.post("/api/quiz/attempt", async (req, res) => {
     try {
       const attempt = await db.insert(attempts).values({

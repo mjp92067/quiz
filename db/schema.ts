@@ -49,6 +49,15 @@ export const leaderboard = pgTable("leaderboard", {
   createdAt: timestamp("created_at").defaultNow()
 });
 
+export const friends = pgTable("friends", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  friendId: integer("friend_id").references(() => users.id).notNull(),
+  status: text("status").notNull(), // pending, accepted, rejected
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -60,6 +69,10 @@ export type InsertQuiz = z.infer<typeof insertQuizSchema>;
 export type Quiz = z.infer<typeof selectQuizSchema>;
 
 export const insertAttemptSchema = createInsertSchema(attempts);
+export const insertFriendSchema = createInsertSchema(friends);
+export const selectFriendSchema = createSelectSchema(friends);
+export type InsertFriend = z.infer<typeof insertFriendSchema>;
+export type Friend = z.infer<typeof selectFriendSchema>;
 export const selectAttemptSchema = createSelectSchema(attempts);
 export type InsertAttempt = z.infer<typeof insertAttemptSchema>;
 export type Attempt = z.infer<typeof selectAttemptSchema>;
