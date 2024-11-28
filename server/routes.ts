@@ -1,6 +1,6 @@
 import type { Express, Request } from "express";
 import { db } from "../db";
-import { users, quizzes, attempts, leaderboard, type User } from "@db/schema";
+import { users, quizzes, attempts, leaderboard, friends, type User } from "@db/schema";
 import { eq, desc, asc, sql } from "drizzle-orm";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";

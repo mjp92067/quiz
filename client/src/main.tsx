@@ -10,6 +10,7 @@ import { Home } from "./pages/Home";
 import { Quiz } from "./pages/Quiz";
 import { Auth } from "./pages/Auth";
 import { SharedQuiz } from "./pages/SharedQuiz";
+import { Friends } from "./pages/Friends";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/quiz" component={Quiz} />
       <Route path="/quiz/shared/:shareCode" component={SharedQuiz} />
       <Route path="/auth" component={Auth} />
+      <Route path="/friends" component={Friends} />
       <Route>404 Page Not Found</Route>
     </Switch>
   );

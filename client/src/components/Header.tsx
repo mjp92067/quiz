@@ -16,6 +16,7 @@ export function Header() {
             <Link href="/features">Features</Link>
             <Link href="/pricing">Pricing</Link>
             <Link href="/about">About</Link>
+            <Link href="/friends">Friends</Link>
             <Button variant="outline" asChild>
               <Link href="/auth">Sign In</Link>
             </Button>
