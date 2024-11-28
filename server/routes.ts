@@ -1,10 +1,17 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { db } from "../db";
-import { users, quizzes, attempts } from "@db/schema";
+import { users, quizzes, attempts, type User } from "@db/schema";
 import { eq } from "drizzle-orm";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
+
+// Extend Express.Request to include user
+declare global {
+  namespace Express {
+    interface User extends User {}
+  }
+}
 
 export function registerRoutes(app: Express) {
   // Auth routes
