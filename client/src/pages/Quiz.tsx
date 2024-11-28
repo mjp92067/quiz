@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { ShareQuiz } from "@/components/ShareQuiz";
+import { Leaderboard } from "@/components/Leaderboard";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_DOCUMENT_TYPES = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
@@ -316,6 +318,18 @@ export function Quiz() {
           </form>
         </Form>
       </Card>
+
+      {/* Show ShareQuiz and Leaderboard only after quiz is generated */}
+      {generateQuiz.data && (
+        <div className="mt-8 space-y-6">
+          <ShareQuiz
+            quizId={generateQuiz.data.id}
+            isPublic={generateQuiz.data.isPublic}
+            shareCode={generateQuiz.data.shareCode}
+          />
+          <Leaderboard quizId={generateQuiz.data.id} />
+        </div>
+      )}
     </div>
   );
 }

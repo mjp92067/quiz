@@ -9,12 +9,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { Home } from "./pages/Home";
 import { Quiz } from "./pages/Quiz";
 import { Auth } from "./pages/Auth";
+import { SharedQuiz } from "./pages/SharedQuiz";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/quiz" component={Quiz} />
+      <Route path="/quiz/shared/:shareCode" component={SharedQuiz} />
       <Route path="/auth" component={Auth} />
       <Route>404 Page Not Found</Route>
     </Switch>

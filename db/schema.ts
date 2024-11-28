@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, jsonb, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -22,6 +22,9 @@ export const quizzes = pgTable("quizzes", {
   difficulty: text("difficulty").notNull(), // easy, medium, hard
   level: text("level").notNull(), // elementary, middle, high, university
   questions: jsonb("questions").notNull(),
+  isPublic: boolean("is_public").default(false).notNull(),
+  shareCode: text("share_code").unique(),
+  totalAttempts: integer("total_attempts").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow()
 });
 
@@ -45,6 +48,19 @@ export type InsertQuiz = z.infer<typeof insertQuizSchema>;
 export type Quiz = z.infer<typeof selectQuizSchema>;
 
 export const insertAttemptSchema = createInsertSchema(attempts);
+export const leaderboard = pgTable("leaderboard", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id),
+  quizId: integer("quiz_id").references(() => quizzes.id),
+  score: integer("score").notNull(),
+  timeTaken: integer("time_taken").notNull(), // in seconds
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertLeaderboardSchema = createInsertSchema(leaderboard);
+export const selectLeaderboardSchema = createSelectSchema(leaderboard);
+export type InsertLeaderboard = z.infer<typeof insertLeaderboardSchema>;
+export type Leaderboard = z.infer<typeof selectLeaderboardSchema>;
 export const selectAttemptSchema = createSelectSchema(attempts);
 export type InsertAttempt = z.infer<typeof insertAttemptSchema>;
 export type Attempt = z.infer<typeof selectAttemptSchema>;
