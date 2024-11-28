@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
@@ -39,9 +40,11 @@ export function DifficultySelect() {
             </div>
           </RadioGroup>
 
-          <Button size="lg" className="w-full">
-            Create Your Quiz Now
-          </Button>
+          <Link href="/quiz">
+            <Button size="lg" className="w-full">
+              Create Your Quiz Now
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

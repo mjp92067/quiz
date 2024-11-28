@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { HowItWorks } from "../components/HowItWorks";
@@ -20,10 +21,14 @@ export function Home() {
             personalized quizzes to boost your knowledge.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button size="lg">Get Started</Button>
-            <Button size="lg" variant="outline">
-              Learn More
-            </Button>
+            <Link href="/quiz">
+              <Button size="lg">Get Started</Button>
+            </Link>
+            <Link href="#how-it-works">
+              <Button size="lg" variant="outline">
+                Learn More
+              </Button>
+            </Link>
           </div>
         </section>
 
