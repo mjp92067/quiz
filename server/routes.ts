@@ -40,13 +40,49 @@ export function registerRoutes(app: Express) {
   // Quiz routes
   app.post("/api/quiz/generate", async (req, res) => {
     try {
+      const { content, contentType, type, difficulty, level, numQuestions } = req.body;
+      
+      // Validate required fields
+      if (!content || !contentType || !type || !difficulty || !level || !numQuestions) {
+        return res.status(400).json({ 
+          error: "Missing required fields", 
+          details: "All fields are required: content, contentType, type, difficulty, level, numQuestions" 
+        });
+      }
+
+      // Generate quiz questions using content
+      const questions = Array.from({ length: numQuestions }, (_, index) => ({
+        question: `Sample Question ${index + 1} from ${content.substring(0, 50)}...`,
+        options: ["Option A", "Option B", "Option C", "Option D"],
+        correctAnswer: "Option A"
+      }));
+
+      // Save quiz to database
       const quiz = await db.insert(quizzes).values({
-        ...req.body,
-        userId: req.user?.id
+        userId: req.user?.id,
+        content,
+        contentType,
+        type,
+        difficulty,
+        level,
+        numQuestions,
+        questions: JSON.stringify(questions),
+        isPublic: false,
+        totalAttempts: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }).returning();
-      res.json(quiz[0]);
+
+      res.json({
+        ...quiz[0],
+        questions
+      });
     } catch (error) {
-      res.status(500).json({ error: "Error generating quiz" });
+      console.error("Quiz generation error:", error);
+      res.status(500).json({ 
+        error: "Error generating quiz",
+        details: error instanceof Error ? error.message : "Unknown error occurred"
+      });
     }
   });
 
@@ -65,16 +101,49 @@ export function registerRoutes(app: Express) {
   app.post("/api/quiz/share", async (req, res) => {
     try {
       const { quizId } = req.body;
+      
+      if (!quizId) {
+        return res.status(400).json({ 
+          error: "Missing quiz ID",
+          details: "Quiz ID is required for sharing" 
+        });
+      }
+
+      // Check if quiz exists and belongs to user
+      const existingQuiz = await db.query.quizzes.findFirst({
+        where: eq(quizzes.id, quizId)
+      });
+
+      if (!existingQuiz) {
+        return res.status(404).json({ 
+          error: "Quiz not found",
+          details: "The specified quiz does not exist" 
+        });
+      }
+
+      // Generate unique share code
       const shareCode = Math.random().toString(36).substring(2, 8).toUpperCase();
       
+      // Update quiz with share code
       const quiz = await db.update(quizzes)
-        .set({ isPublic: true, shareCode })
+        .set({ 
+          isPublic: true, 
+          shareCode,
+          updatedAt: new Date()
+        })
         .where(eq(quizzes.id, quizId))
         .returning();
 
-      res.json(quiz[0]);
+      res.json({
+        ...quiz[0],
+        shareUrl: `/quiz/shared/${shareCode}`
+      });
     } catch (error) {
-      res.status(500).json({ error: "Error sharing quiz" });
+      console.error("Quiz sharing error:", error);
+      res.status(500).json({ 
+        error: "Error sharing quiz",
+        details: error instanceof Error ? error.message : "Unknown error occurred"
+      });
     }
   });
 

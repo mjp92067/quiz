@@ -107,12 +107,25 @@ export function Quiz() {
         method: "POST",
         body: formData
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || error.error || "Failed to generate quiz");
+      }
+
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
-        title: "Quiz Generated",
-        description: "Your quiz is ready to take!"
+        title: "Quiz Generated Successfully",
+        description: `Created ${data.questions.length} questions!`
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to Generate Quiz",
+        description: error.message,
+        variant: "destructive"
       });
     }
   });
@@ -319,14 +332,66 @@ export function Quiz() {
         </Form>
       </Card>
 
-      {/* Show ShareQuiz and Leaderboard only after quiz is generated */}
+      {/* Display generated quiz questions */}
       {generateQuiz.data && (
         <div className="mt-8 space-y-6">
+          <Card className="p-6">
+            <h3 className="text-2xl font-bold mb-4">Generated Quiz</h3>
+            <div className="space-y-6">
+              {generateQuiz.data.questions.map((question: any, index: number) => (
+                <div key={index} className="p-4 border rounded-lg">
+                  <h4 className="font-semibold mb-3">Question {index + 1}</h4>
+                  <p className="mb-4">{question.question}</p>
+                  <div className="space-y-2">
+                    {question.options.map((option: string, optionIndex: number) => (
+                      <div key={optionIndex} className="flex items-center">
+                        <RadioGroupItem
+                          value={option}
+                          id={`q${index}-${optionIndex}`}
+                          disabled
+                        />
+                        <Label htmlFor={`q${index}-${optionIndex}`} className="ml-2">
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
           <ShareQuiz
             quizId={generateQuiz.data.id}
             isPublic={generateQuiz.data.isPublic}
             shareCode={generateQuiz.data.shareCode}
+            onShare={async () => {
+              try {
+                const response = await fetch("/api/quiz/share", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ quizId: generateQuiz.data.id })
+                });
+                
+                if (!response.ok) {
+                  throw new Error("Failed to share quiz");
+                }
+
+                const result = await response.json();
+                toast({
+                  title: "Quiz Shared Successfully",
+                  description: `Share code: ${result.shareCode}`
+                });
+              } catch (error) {
+                toast({
+                  title: "Failed to Share Quiz",
+                  description: error instanceof Error ? error.message : "Unknown error occurred",
+                  variant: "destructive"
+                });
+              }
+            }}
           />
+          
           <Leaderboard quizId={generateQuiz.data.id} />
         </div>
       )}
