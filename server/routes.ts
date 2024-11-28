@@ -65,6 +65,7 @@ export function registerRoutes(app: Express) {
         type,
         difficulty,
         level,
+        numQuestions: parseInt(numQuestions),
         questions: JSON.stringify(questions),
         isPublic: false,
         totalAttempts: 0

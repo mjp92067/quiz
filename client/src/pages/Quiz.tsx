@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { ShareQuiz } from "@/components/ShareQuiz";
 import { Leaderboard } from "@/components/Leaderboard";
 

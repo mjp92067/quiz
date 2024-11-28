@@ -12,7 +12,7 @@ interface ShareQuizProps {
   onShare?: () => Promise<void>;
 }
 
-export function ShareQuiz({ quizId, isPublic, shareCode }: ShareQuizProps) {
+export function ShareQuiz({ quizId, isPublic, shareCode, onShare }: ShareQuizProps) {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 

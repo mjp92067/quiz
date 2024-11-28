@@ -1,0 +1,75 @@
+06:10:31 PM [express] serving on port 5000
+
+ ERROR(TypeScript)  Cannot find name 'onShare'.
+ FILE  /home/runner/QuizUpAI/client/src/components/ShareQuiz.tsx:56:28
+
+    54 |           </div>
+    55 |           <Button 
+  > 56 |             onClick={() => onShare ? onShare() : shareQuiz.mutate()}
+       |                            ^^^^^^^
+    57 |             disabled={shareQuiz.isPending}
+    58 |           >
+    59 |             {shareQuiz.isPending ? "Sharing..." : "Share"}
+
+ ERROR(TypeScript)  Cannot find name 'onShare'.
+ FILE  /home/runner/QuizUpAI/client/src/components/ShareQuiz.tsx:56:38
+
+    54 |           </div>
+    55 |           <Button 
+  > 56 |             onClick={() => onShare ? onShare() : shareQuiz.mutate()}
+       |                                      ^^^^^^^
+    57 |             disabled={shareQuiz.isPending}
+    58 |           >
+    59 |             {shareQuiz.isPending ? "Sharing..." : "Share"}
+
+ ERROR(TypeScript)  Cannot find name 'RadioGroupItem'.
+ FILE  /home/runner/QuizUpAI/client/src/pages/Quiz.tsx:348:26
+
+    346 |                     {question.options.map((option: string, optionIndex: number) => (
+    347 |                       <div key={optionIndex} className="flex items-center">
+  > 348 |                         <RadioGroupItem
+        |                          ^^^^^^^^^^^^^^
+    349 |                           value={option}
+    350 |                           id={`q${index}-${optionIndex}`}
+    351 |                           disabled
+
+ ERROR(TypeScript)  Cannot find name 'Label'. Did you mean 'babel'?
+ FILE  /home/runner/QuizUpAI/client/src/pages/Quiz.tsx:353:26
+
+    351 |                           disabled
+    352 |                         />
+  > 353 |                         <Label htmlFor={`q${index}-${optionIndex}`} className="ml-2">
+        |                          ^^^^^
+    354 |                           {option}
+    355 |                         </Label>
+    356 |                       </div>
+
+ ERROR(TypeScript)  Cannot find name 'Label'. Did you mean 'babel'?
+ FILE  /home/runner/QuizUpAI/client/src/pages/Quiz.tsx:355:27
+
+    353 |                         <Label htmlFor={`q${index}-${optionIndex}`} className="ml-2">
+    354 |                           {option}
+  > 355 |                         </Label>
+        |                           ^^^^^
+    356 |                       </div>
+    357 |                     ))}
+    358 |                   </div>
+
+ ERROR(TypeScript)  No overload matches this call.
+  Overload 1 of 2, '(value: { content: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<...>; ... 10 more ...; updatedAt?: SQL<...> | ... 3 more ... | undefined; }): PgInsertBase<...>', gave the following error.
+    Argument of type '{ userId: number | undefined; content: any; contentType: any; type: any; difficulty: any; level: any; questions: string; isPublic: false; totalAttempts: number; }' is not assignable to parameter of type '{ content: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<...>; ... 10 more ...; updatedAt?: SQL<...> | ... 3 more ... | undefined; }'.
+      Property 'numQuestions' is missing in type '{ userId: number | undefined; content: any; contentType: any; type: any; difficulty: any; level: any; questions: string; isPublic: false; totalAttempts: number; }' but required in type '{ content: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<...>; ... 10 more ...; updatedAt?: SQL<...> | ... 3 more ... | undefined; }'.
+  Overload 2 of 2, '(values: { content: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<...>; ... 10 more ...; updatedAt?: SQL<...> | ... 3 more ... | undefined; }[]): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'userId' does not exist in type '{ content: string | SQL<unknown> | Placeholder<string, any>; contentType: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<...>; ... 10 more ...; updatedAt?: SQL<...> | ... 3 more ... | undefined; }[]'.
+ FILE  /home/runner/QuizUpAI/server/routes.ts:61:45
+
+    59 |
+    60 |       // Save quiz to database
+  > 61 |       const quiz = await db.insert(quizzes).values({
+       |                                             ^^^^^^
+    62 |         userId: req.user?.id,
+    63 |         content,
+    64 |         contentType,
+
+[TypeScript] Found 6 errors. Watching for file changes.
+06:12:10 PM [express] POST /api/quiz/generate 400 in 2ms :: {"error":"Missing required fields","detai…
