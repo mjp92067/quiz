@@ -5,6 +5,14 @@ import { eq, desc, asc, sql } from "drizzle-orm";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
+import multer from "multer";
+
+// Configure multer for handling file uploads
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
 
 // Extend Express.Request to include user
 declare global {
@@ -38,7 +46,15 @@ export function registerRoutes(app: Express) {
   });
 
   // Quiz routes
-  app.post("/api/quiz/generate", async (req, res) => {
+  app.post("/api/quiz/generate", upload.single('file'), async (req, res) => {
+    console.log('Received form data:', {
+      body: req.body,
+      file: req.file ? { 
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      } : null
+    });
     try {
       const { content, contentType, type, difficulty, level, numQuestions } = req.body;
       

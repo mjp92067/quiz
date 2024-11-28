@@ -99,7 +99,7 @@ export function Quiz() {
       const formData = new FormData();
       
       // Add all required fields
-      formData.append('content', data.content);
+      formData.append('content', data.content || '');
       formData.append('contentType', data.contentType);
       formData.append('type', data.type);
       formData.append('difficulty', data.difficulty);
@@ -110,6 +110,17 @@ export function Quiz() {
       if (data.file) {
         formData.append('file', data.file);
       }
+
+      // Debug log
+      console.log('Submitting form data:', {
+        content: data.content,
+        contentType: data.contentType,
+        type: data.type,
+        difficulty: data.difficulty,
+        level: data.level,
+        numQuestions: data.numQuestions,
+        hasFile: !!data.file
+      });
 
       const response = await fetch("/api/quiz/generate", {
         method: "POST",
