@@ -16,16 +16,19 @@ export const users = pgTable("users", {
 export const quizzes = pgTable("quizzes", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id").references(() => users.id),
-  title: text("title").notNull(),
+  title: text("title"),
   content: text("content").notNull(),
+  contentType: text("content_type").notNull(), // text, document, image
   type: text("type").notNull(), // multiple-choice, true-false, fill-blank
   difficulty: text("difficulty").notNull(), // easy, medium, hard
   level: text("level").notNull(), // elementary, middle, high, university
   questions: jsonb("questions").notNull(),
+  numQuestions: integer("num_questions").notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
   shareCode: text("share_code").unique(),
   totalAttempts: integer("total_attempts").default(0).notNull(),
-  createdAt: timestamp("created_at").defaultNow()
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 export const attempts = pgTable("attempts", {
@@ -34,6 +37,15 @@ export const attempts = pgTable("attempts", {
   quizId: integer("quiz_id").references(() => quizzes.id),
   score: integer("score").notNull(),
   answers: jsonb("answers").notNull(),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const leaderboard = pgTable("leaderboard", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id),
+  quizId: integer("quiz_id").references(() => quizzes.id),
+  score: integer("score").notNull(),
+  timeTaken: integer("time_taken").notNull(), // in seconds
   createdAt: timestamp("created_at").defaultNow()
 });
 
@@ -48,19 +60,11 @@ export type InsertQuiz = z.infer<typeof insertQuizSchema>;
 export type Quiz = z.infer<typeof selectQuizSchema>;
 
 export const insertAttemptSchema = createInsertSchema(attempts);
-export const leaderboard = pgTable("leaderboard", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer("user_id").references(() => users.id),
-  quizId: integer("quiz_id").references(() => quizzes.id),
-  score: integer("score").notNull(),
-  timeTaken: integer("time_taken").notNull(), // in seconds
-  createdAt: timestamp("created_at").defaultNow()
-});
+export const selectAttemptSchema = createSelectSchema(attempts);
+export type InsertAttempt = z.infer<typeof insertAttemptSchema>;
+export type Attempt = z.infer<typeof selectAttemptSchema>;
 
 export const insertLeaderboardSchema = createInsertSchema(leaderboard);
 export const selectLeaderboardSchema = createSelectSchema(leaderboard);
 export type InsertLeaderboard = z.infer<typeof insertLeaderboardSchema>;
 export type Leaderboard = z.infer<typeof selectLeaderboardSchema>;
-export const selectAttemptSchema = createSelectSchema(attempts);
-export type InsertAttempt = z.infer<typeof insertAttemptSchema>;
-export type Attempt = z.infer<typeof selectAttemptSchema>;

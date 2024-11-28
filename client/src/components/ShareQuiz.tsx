@@ -9,6 +9,7 @@ interface ShareQuizProps {
   quizId: number;
   isPublic?: boolean;
   shareCode?: string;
+  onShare?: () => Promise<void>;
 }
 
 export function ShareQuiz({ quizId, isPublic, shareCode }: ShareQuizProps) {
@@ -52,7 +53,7 @@ export function ShareQuiz({ quizId, isPublic, shareCode }: ShareQuizProps) {
             <span>Share Quiz</span>
           </div>
           <Button 
-            onClick={() => shareQuiz.mutate()}
+            onClick={() => onShare ? onShare() : shareQuiz.mutate()}
             disabled={shareQuiz.isPending}
           >
             {shareQuiz.isPending ? "Sharing..." : "Share"}

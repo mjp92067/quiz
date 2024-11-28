@@ -1,0 +1,31 @@
+ ERROR(TypeScript)  No overload matches this call.
+  Overload 1 of 2, '(value: { title: string | SQL<unknown> | Placeholder<string, any>; content: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<...>; ... 7 more ...; totalAttempts?: number | ... 2 more ... | undefined; }): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'contentType' does not exist in type '{ title: string | SQL<unknown> | Placeholder<string, any>; content: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<string, any>; ... 7 more ...; totalAttempts?: number | ... 2 more ... | undefined; }'.
+  Overload 2 of 2, '(values: { title: string | SQL<unknown> | Placeholder<string, any>; content: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<...>; ... 7 more ...; totalAttempts?: number | ... 2 more ... | undefined; }[]): PgInsertBase<...>', gave the following error.
+    Object literal may only specify known properties, and 'userId' does not exist in type '{ title: string | SQL<unknown> | Placeholder<string, any>; content: string | SQL<unknown> | Placeholder<string, any>; type: string | SQL<unknown> | Placeholder<string, any>; ... 7 more ...; totalAttempts?: number | ... 2 more ... | undefined; }[]'.
+ FILE  /home/runner/QuizUpAI/server/routes.ts:61:45
+
+    59 |
+    60 |       // Save quiz to database
+  > 61 |       const quiz = await db.insert(quizzes).values({
+       |                                             ^^^^^^
+    62 |         userId: req.user?.id,
+    63 |         content,
+    64 |         contentType,
+
+ ERROR(TypeScript)  Object literal may only specify known properties, and 'updatedAt' does not exist in type '{ title?: string | SQL<unknown> | undefined; content?: string | SQL<unknown> | undefined; type?: string | SQL<unknown> | undefined; difficulty?: string | SQL<unknown> | undefined; level?: string | SQL<...> | undefined; ... 5 more ...; totalAttempts?: number | ... 1 more ... | undefined; }'.
+ FILE  /home/runner/QuizUpAI/server/routes.ts:132:11
+
+    130 |           isPublic: true, 
+    131 |           shareCode,
+  > 132 |           updatedAt: new Date()
+        |           ^^^^^^^^^
+    133 |         })
+    134 |         .where(eq(quizzes.id, quizId))
+    135 |         .returning();
+
+[TypeScript] Found 6 errors. Watching for file changes.
+06:06:21 PM [express] POST /api/quiz/generate 400 in 2ms :: {"error":"Missing required fields","detai…
+06:06:51 PM [express] POST /api/quiz/generate 400 in 0ms :: {"error":"Missing required fields","detai…
+06:07:24 PM [express] POST /api/quiz/generate 400 in 1ms :: {"error":"Missing required fields","detai…
+06:07:26 PM [express] POST /api/quiz/generate 400 in 1ms :: {"error":"Missing required fields","detai…

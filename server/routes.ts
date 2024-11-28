@@ -65,12 +65,9 @@ export function registerRoutes(app: Express) {
         type,
         difficulty,
         level,
-        numQuestions,
         questions: JSON.stringify(questions),
         isPublic: false,
-        totalAttempts: 0,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        totalAttempts: 0
       }).returning();
 
       res.json({
@@ -128,8 +125,7 @@ export function registerRoutes(app: Express) {
       const quiz = await db.update(quizzes)
         .set({ 
           isPublic: true, 
-          shareCode,
-          updatedAt: new Date()
+          shareCode
         })
         .where(eq(quizzes.id, quizId))
         .returning();
