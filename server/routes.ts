@@ -1,7 +1,7 @@
 import type { Express, Request } from "express";
 import { db } from "../db";
-import { users, quizzes, attempts, type User } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { users, quizzes, attempts, leaderboard, type User } from "@db/schema";
+import { eq, desc, asc, sql } from "drizzle-orm";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
@@ -56,6 +56,12 @@ export function registerRoutes(app: Express) {
         ...req.body,
         userId: req.user?.id
       }).returning();
+      res.json(attempt[0]);
+    } catch (error) {
+      res.status(500).json({ error: "Error saving attempt" });
+    }
+  });
+
   app.post("/api/quiz/share", async (req, res) => {
     try {
       const { quizId } = req.body;
@@ -126,11 +132,6 @@ export function registerRoutes(app: Express) {
       res.json(entry[0]);
     } catch (error) {
       res.status(500).json({ error: "Error saving leaderboard entry" });
-    }
-  });
-      res.json(attempt[0]);
-    } catch (error) {
-      res.status(500).json({ error: "Error saving attempt" });
     }
   });
 
