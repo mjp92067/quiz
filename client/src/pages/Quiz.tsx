@@ -361,20 +361,22 @@ export function Quiz() {
                 <div key={index} className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-3">Question {index + 1}</h4>
                   <p className="mb-4">{question.question}</p>
-                  <div className="space-y-2">
-                    {question.options.map((option: string, optionIndex: number) => (
-                      <div key={optionIndex} className="flex items-center">
-                        <RadioGroupItem
-                          value={option}
-                          id={`q${index}-${optionIndex}`}
-                          disabled
-                        />
-                        <Label htmlFor={`q${index}-${optionIndex}`} className="ml-2">
-                          {option}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
+                  <RadioGroup>
+                    <div className="space-y-2">
+                      {question.options.map((option: string, optionIndex: number) => (
+                        <div key={optionIndex} className="flex items-center">
+                          <RadioGroupItem
+                            value={option}
+                            id={`q${index}-${optionIndex}`}
+                            disabled
+                          />
+                          <Label htmlFor={`q${index}-${optionIndex}`} className="ml-2">
+                            {option}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
                 </div>
               ))}
             </div>

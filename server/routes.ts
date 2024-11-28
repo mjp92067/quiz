@@ -56,16 +56,16 @@ export function registerRoutes(app: Express) {
       } : null
     });
     try {
-      const { content, contentType, type, difficulty, level, numQuestions } = req.body;
+      const { content, contentType: content_type, type, difficulty, level, numQuestions: num_questions } = req.body;
       
       // Validate required fields and their types
       const requiredFields = {
         content: content,
-        contentType: contentType,
+        content_type: content_type,
         type: type,
         difficulty: difficulty,
         level: level,
-        numQuestions: numQuestions
+        num_questions: num_questions
       };
 
       // Check for missing fields
@@ -81,7 +81,7 @@ export function registerRoutes(app: Express) {
       }
 
       // Validate field values
-      if (!['text', 'document', 'image'].includes(contentType)) {
+      if (!['text', 'document', 'image'].includes(content_type)) {
         return res.status(400).json({
           error: "Invalid content type",
           details: "Content type must be one of: text, document, image"
@@ -128,14 +128,15 @@ export function registerRoutes(app: Express) {
       const quiz = await db.insert(quizzes).values({
         userId: req.user?.id,
         content,
-        contentType,
+        content_type,
         type,
         difficulty,
         level,
-        numQuestions: parseInt(numQuestions),
+        num_questions: parseInt(num_questions),
         questions: JSON.stringify(questions),
-        isPublic: false,
-        totalAttempts: 0
+        is_public: false,
+        total_attempts: 0,
+        updated_at: new Date()
       }).returning();
 
       res.json({
