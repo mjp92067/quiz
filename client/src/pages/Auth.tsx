@@ -1,15 +1,28 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { insertUserSchema } from "@db/schema";
+import { useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6)
+});
 
 export function Auth() {
   const { toast } = useToast();
-  const form = useForm({
+  const [, setLocation] = useLocation();
+  
+  const registerForm = useForm({
+    resolver: zodResolver(insertUserSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -18,47 +31,198 @@ export function Auth() {
     }
   });
 
-  const handleSubmit = async (data: z.infer<typeof insertUserSchema>) => {
-    try {
+  const loginForm = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: ""
+    }
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof insertUserSchema>) => {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        credentials: "include"
       });
       
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Account created successfully!"
-        });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Registration failed");
       }
-    } catch (error) {
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Account created successfully!"
+      });
+      setLocation("/");
+    },
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: "Something went wrong",
+        description: error.message,
         variant: "destructive"
       });
     }
-  };
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof loginSchema>) => {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include"
+      });
+      
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Logged in successfully!"
+      });
+      setLocation("/");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-md mx-auto p-6">
-        <h2 className="text-2xl font-bold mb-6">Sign Up</h2>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            {/* Form fields implementation */}
-          </form>
-        </Form>
-        
-        <div className="mt-6">
-          <Button className="w-full" variant="outline" onClick={() => window.location.href = "/api/auth/google"}>
-            Continue with Google
-          </Button>
-          <Button className="w-full mt-2" variant="outline" onClick={() => window.location.href = "/api/auth/facebook"}>
-            Continue with Facebook
-          </Button>
-        </div>
+        <Tabs defaultValue="login">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="register">Register</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="login">
+            <Form {...loginForm}>
+              <form onSubmit={loginForm.handleSubmit(data => loginMutation.mutate(data))} className="space-y-4">
+                <FormField
+                  control={loginForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={loginForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={loginMutation.isPending}
+                >
+                  {loginMutation.isPending ? "Logging in..." : "Login"}
+                </Button>
+              </form>
+            </Form>
+          </TabsContent>
+
+          <TabsContent value="register">
+            <Form {...registerForm}>
+              <form onSubmit={registerForm.handleSubmit(data => registerMutation.mutate(data))} className="space-y-4">
+                <FormField
+                  control={registerForm.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={registerMutation.isPending}
+                >
+                  {registerMutation.isPending ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
+            </Form>
+          </TabsContent>
+        </Tabs>
       </Card>
     </div>
   );

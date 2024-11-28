@@ -28,8 +28,16 @@ export function FriendSystem() {
   const { data: friends } = useQuery({
     queryKey: ["friends"],
     queryFn: async () => {
-      const response = await fetch("/api/friends");
-      if (!response.ok) throw new Error("Failed to fetch friends");
+      const response = await fetch("/api/friends", {
+        credentials: "include"
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.href = "/auth";
+          throw new Error("Please login to view friends");
+        }
+        throw new Error("Failed to fetch friends");
+      }
       return response.json();
     }
   });
@@ -38,8 +46,16 @@ export function FriendSystem() {
   const { data: friendRequests } = useQuery({
     queryKey: ["friend-requests"],
     queryFn: async () => {
-      const response = await fetch("/api/friends/requests");
-      if (!response.ok) throw new Error("Failed to fetch friend requests");
+      const response = await fetch("/api/friends/requests", {
+        credentials: "include"
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.href = "/auth";
+          throw new Error("Please login to view friend requests");
+        }
+        throw new Error("Failed to fetch friend requests");
+      }
       return response.json();
     }
   });
@@ -50,7 +66,8 @@ export function FriendSystem() {
       const response = await fetch("/api/friends/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ friendId })
+        body: JSON.stringify({ friendId }),
+        credentials: "include"
       });
       if (!response.ok) {
         const error = await response.json();
@@ -81,7 +98,8 @@ export function FriendSystem() {
       const response = await fetch("/api/friends/respond", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requestId, accept })
+        body: JSON.stringify({ requestId, accept }),
+        credentials: "include"
       });
       if (!response.ok) throw new Error("Failed to respond to friend request");
       return response.json();
