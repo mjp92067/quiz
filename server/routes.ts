@@ -42,7 +42,23 @@ export function registerRoutes(app: Express) {
   });
 
   app.post("/api/auth/login", passport.authenticate("local"), (req, res) => {
-    res.json({ message: "Logged in successfully" });
+    res.json({ user: req.user });
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to logout" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get("/api/auth/me", (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    res.json(req.user);
   });
 
   // Quiz routes

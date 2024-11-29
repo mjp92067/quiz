@@ -9,8 +9,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { insertUserSchema } from "@db/schema";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -20,7 +21,15 @@ const loginSchema = z.object({
 export function Auth() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
   
+  // Redirect if already authenticated
+  if (isAuthenticated) {
+    setLocation("/quiz");
+    return null;
+  }
+
   const registerForm = useForm({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
@@ -60,7 +69,7 @@ export function Auth() {
         title: "Success",
         description: "Account created successfully!"
       });
-      setLocation("/");
+      setLocation("/quiz");
     },
     onError: (error: Error) => {
       toast({
@@ -86,12 +95,13 @@ export function Auth() {
       
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.setQueryData(["auth-user"], data.user);
       toast({
         title: "Success",
         description: "Logged in successfully!"
       });
-      setLocation("/");
+      setLocation("/quiz");
     },
     onError: (error: Error) => {
       toast({
