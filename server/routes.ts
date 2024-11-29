@@ -1,3 +1,4 @@
+import { generateQuestions } from "./services/openai";
 import type { Express, Request } from "express";
 import { db } from "../db";
 import { users, quizzes, attempts, leaderboard, friends, type User } from "@db/schema";
@@ -65,19 +66,6 @@ export function registerRoutes(app: Express) {
   });
 
   // Quiz routes
-  // Quiz template routes
-  app.get("/api/quiz/templates", async (req, res) => {
-    try {
-      const templates = await db.query.quizTemplates.findMany({
-        orderBy: (quizTemplates, { asc }) => [asc(quizTemplates.name)]
-      });
-      res.json(templates);
-    } catch (error) {
-      console.error("Error fetching quiz templates:", error);
-      res.status(500).json({ error: "Failed to fetch quiz templates" });
-    }
-  });
-
   app.post("/api/quiz/generate", upload.single('file'), async (req, res) => {
     console.log('Received form data:', {
       body: req.body,
@@ -149,12 +137,13 @@ export function registerRoutes(app: Express) {
         });
       }
 
-      // Generate quiz questions using content
-      const questions = Array.from({ length: parsedNumQuestions }, (_, index) => ({
-        question: `Sample Question ${index + 1} from ${content.substring(0, 50)}...`,
-        options: ["Option A", "Option B", "Option C", "Option D"],
-        correctAnswer: "Option A"
-      }));
+      // Generate quiz questions using OpenAI
+      const questions = await generateQuestions(content, {
+        type: type as 'multiple-choice' | 'true-false' | 'fill-blank',
+        difficulty: difficulty as 'easy' | 'medium' | 'hard',
+        level: level as 'elementary' | 'middle' | 'high' | 'university',
+        numQuestions: parsedNumQuestions
+      });
 
       // Save quiz to database
       const quiz = await db.insert(quizzes).values({

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { TemplateSelect } from "@/components/TemplateSelect";
+import { useMutation } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
@@ -17,6 +16,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ShareQuiz } from "@/components/ShareQuiz";
 import { Leaderboard } from "@/components/Leaderboard";
+// OpenAI integration is now directly handling quiz generation
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_DOCUMENT_TYPES = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
@@ -337,22 +337,9 @@ export function Quiz() {
                 )}
               />
 
-              <div className="space-y-6">
-                <Card className="p-4">
-                  <TemplateSelect 
-                    onSelect={(template) => {
-                      form.setValue("type", template.type as any);
-                      form.setValue("difficulty", template.difficulty as any);
-                      form.setValue("level", template.level as any);
-                      form.setValue("numQuestions", template.numQuestions);
-                    }} 
-                  />
-                </Card>
-                
-                <Button type="submit" className="w-full" disabled={generateQuiz.isPending}>
-                  {generateQuiz.isPending ? "Generating..." : "Generate Quiz"}
-                </Button>
-              </div>
+              <Button type="submit" className="w-full" disabled={generateQuiz.isPending}>
+                {generateQuiz.isPending ? "Generating..." : "Generate Quiz"}
+              </Button>
             </form>
           </Form>
         </Card>
