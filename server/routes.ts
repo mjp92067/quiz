@@ -2,6 +2,7 @@ import type { Express, Request } from "express";
 import { db } from "../db";
 import { users, quizzes, attempts, leaderboard, friends, type User } from "@db/schema";
 import { eq, desc, asc, sql } from "drizzle-orm";
+import analyticsRoutes from "./routes/analytics";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
@@ -27,6 +28,8 @@ declare global {
 }
 
 export function registerRoutes(app: Express) {
+  // Register analytics routes
+  app.use("/api/analytics", analyticsRoutes);
   // Auth routes
   app.post("/api/auth/register", async (req, res) => {
     try {

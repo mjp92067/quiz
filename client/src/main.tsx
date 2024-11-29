@@ -11,6 +11,7 @@ import { Quiz } from "./pages/Quiz";
 import { Auth } from "./pages/Auth";
 import { SharedQuiz } from "./pages/SharedQuiz";
 import { Friends } from "./pages/Friends";
+import { Analytics } from "./pages/Analytics";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/quiz/shared/:shareCode" component={SharedQuiz} />
       <Route path="/auth" component={Auth} />
       <Route path="/friends" component={Friends} />
+      <Route path="/analytics" component={Analytics} />
       <Route>404 Page Not Found</Route>
     </Switch>
   );
