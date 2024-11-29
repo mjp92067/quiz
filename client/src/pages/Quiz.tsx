@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -45,11 +45,27 @@ const quizSchema = z.object({
 
 type QuizFormData = z.infer<typeof quizSchema>;
 
+type Question = {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+};
+
 export function Quiz() {
   const { toast } = useToast();
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [startTime] = useState<number>(Date.now());
+  const [score, setScore] = useState<number | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<string>("text");
+
+  // Reset answers when new quiz is generated
+  useEffect(() => {
+    if (generateQuiz.data?.questions) {
+      setAnswers(new Array(generateQuiz.data.questions.length).fill(''));
+    }
+  }, [generateQuiz.data?.questions]);
 
   const form = useForm<QuizFormData>({
     resolver: zodResolver(quizSchema),
@@ -445,7 +461,14 @@ export function Quiz() {
                   <div key={index} className="p-4 border rounded-lg">
                     <h4 className="font-semibold mb-3">Question {index + 1}</h4>
                     <p className="mb-4">{question.question}</p>
-                    <RadioGroup>
+                    <RadioGroup
+                      value={answers[index] || ""}
+                      onValueChange={(value) => {
+                        const newAnswers = [...answers];
+                        newAnswers[index] = value;
+                        setAnswers(newAnswers);
+                      }}
+                    >
                       <div className="space-y-2">
                         {question.options.map((option: string, optionIndex: number) => (
                           <div key={optionIndex} className="flex items-center">
@@ -463,6 +486,64 @@ export function Quiz() {
                   </div>
                 ))}
               </div>
+              <div className="mt-6 space-y-4">
+                {answers.length < generateQuiz.data.questions.length && (
+                  <p className="text-sm text-yellow-600">
+                    Please answer all questions before submitting.
+                  </p>
+                )}
+                <Button 
+                  className="w-full"
+                  size="lg"
+                  disabled={answers.length < generateQuiz.data.questions.length}
+                  onClick={() => {
+                    if (!generateQuiz.data?.questions) return;
+                    
+                    // Check if all questions are answered
+                    const unansweredQuestions = answers.filter(answer => !answer).length;
+                    if (unansweredQuestions > 0) {
+                      toast({
+                        title: "Incomplete Quiz",
+                        description: `Please answer all questions before submitting. ${unansweredQuestions} questions remaining.`,
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    
+                    const totalQuestions = generateQuiz.data.questions.length;
+                    const correctAnswers = generateQuiz.data.questions.reduce(
+                      (acc: number, question: Question, index: number) => 
+                        answers[index] === question.correctAnswer ? acc + 1 : acc,
+                      0
+                    );
+                    const finalScore = (correctAnswers / totalQuestions) * 100;
+                    setScore(finalScore);
+
+                    // Submit to leaderboard
+                    fetch(`/api/quiz/${generateQuiz.data.id}/leaderboard`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        score: finalScore,
+                        timeTaken: Date.now() - startTime
+                      })
+                    });
+
+                    toast({
+                      title: "Quiz Submitted!",
+                      description: `Your score: ${finalScore.toFixed(2)}%`,
+                    });
+                  }}
+                >
+                  Submit Quiz
+                </Button>
+              </div>
+              {score !== null && (
+                <div className="mt-4 p-4 bg-secondary rounded-lg">
+                  <h4 className="text-xl font-semibold mb-2">Quiz Results</h4>
+                  <p>Your score: {score.toFixed(2)}%</p>
+                </div>
+              )}
             </Card>
 
             <ShareQuiz

@@ -1,0 +1,130 @@
+03:30:44 AM [express] serving on port 5000
+03:30:54 AM [express] GET /api/auth/me 401 in 4ms :: {"error":"Not authenticated"}
+03:30:55 AM [express] GET /api/auth/me 401 in 0ms :: {"error":"Not authenticated"}
+
+ ERROR(TypeScript)  Module '"@db/schema"' has no exported member 'QuizTemplate'.
+ FILE  /home/runner/QuizUpAI/client/src/components/TemplateSelect.tsx:6:15
+
+    4 | import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+    5 | import { Label } from "@/components/ui/label";
+  > 6 | import { type QuizTemplate } from "@db/schema";
+      |               ^^^^^^^^^^^^
+    7 |
+    8 |
+    9 | //Removed TemplateSelect Component and related code.
+
+ ERROR(TypeScript)  Property 'userId' does not exist on type 'Session & Partial<SessionData>'.
+ FILE  /home/runner/QuizUpAI/server/middleware/auth.ts:14:33
+
+    12 | export const auth = async (req: Request, res: Response, next: NextFunction) => {
+    13 |   try {
+  > 14 |     const userId = req.session?.userId;
+       |                                 ^^^^^^
+    15 |     if (!userId) {
+    16 |       return res.status(401).json({ error: "Not authenticated" });
+    17 |     }
+
+ ERROR(TypeScript)  Property 'users' does not exist on type 'DrizzleTypeError<"Seems like the schema generic is missing - did you forget to add it to your DB type?">'.
+ FILE  /home/runner/QuizUpAI/server/middleware/auth.ts:19:33
+
+    17 |     }
+    18 |
+  > 19 |     const user = await db.query.users.findFirst({
+       |                                 ^^^^^
+    20 |       where: eq(users.id, userId)
+    21 |     });
+    22 |
+
+[TypeScript] Found 3 errors. Watching for file changes.
+Received form data: {
+  body: [Object: null prototype] {
+    content: "The cell is the basic structural and functional unit of all forms of life. Every cell consists of cytoplasm enclosed within a membrane; many cells contain organelles, each with a specific function. The term comes from the Latin word cellula meaning 'small room'. Most cells are only visible under a microscope. Cells emerged on Earth about 4 billion years ago. All cells are capable of replication, protein synthesis, and motility.\r\n" +
+      '\r\n' +
+      'Cells are broadly categorized into two types: eukaryotic cells, which possess a nucleus, and prokaryotic cells, which lack a nucleus but have a nucleoid region. Prokaryotes are single-celled organisms such as bacteria, whereas eukaryotes can be either single-celled, such as amoebae, or multicellular, such as some algae, plants, animals, and fungi. Eukaryotic cells contain organelles including mitochondria, which provide energy for cell functions; chloroplasts, which create sugars by photosynthesis, in plants; and ribosomes, which synthesise proteins.\r\n' +
+      '\r\n' +
+      'Cells were discovered by Robert Hooke in 1665, who named them after their resemblance to cells inhabited by Christian monks in a monastery. Cell theory, developed in 1839 by Matthias Jakob Schleiden and Theodor Schwann, states that all organisms are composed of one or more cells, that cells are the fundamental unit of structure and function in all living organisms, and that all cells come from pre-existing cells.\r\n' +
+      '\r\n' +
+      'Cell types\r\n' +
+      'Main article: Cell type\r\n' +
+      'Cells are broadly categorized into two types: eukaryotic cells, which possess a nucleus, and prokaryotic cells, which lack a nucleus but have a nucleoid region. Prokaryotes are single-celled organisms, whereas eukaryotes can be either single-celled or multicellular.\r\n' +
+      '\r\n' +
+      'Prokaryotic cells\r\n' +
+      'Main article: Prokaryote\r\n' +
+      '\r\n' +
+      'Structure of a typical prokaryotic cell\r\n' +
+      'Prokaryotes include bacteria and archaea, two of the three domains of life. Prokaryotic cells were the first form of life on Earth, characterized by having vital biological processes including cell signaling. They are simpler and smaller than eukaryotic cells, and lack a nucleus, and other membrane-bound organelles. The DNA of a prokaryotic cell consists of a single circular chromosome that is in direct contact with the cytoplasm. The nuclear region in the cytoplasm is called the nucleoid. Most prokaryotes are the smallest of all organisms, ranging from 0.5 to 2.0 μm in diameter.[1][page needed]\r\n' +
+      '\r\n' +
+      'A prokaryotic cell has three regions:\r\n' +
+      '\r\n' +
+      'Enclosing the cell is the cell envelope, generally consisting of a plasma membrane covered by a cell wall which, for some bacteria, may be further covered by a third layer called a capsule. Though most prokaryotes have both a cell membrane and a cell wall, there are exceptions such as Mycoplasma (bacteria) and Thermoplasma (archaea) which only possess the cell membrane layer. The envelope gives rigidity to the cell and separates the interior of the cell from its environment, serving as a protective filter. The cell wall consists of peptidoglycan in bacteria and acts as an additional barrier against exterior forces. It also prevents the cell from expanding and bursting (cytolysis) from osmotic pressure due to a hypotonic environment. Some eukaryotic cells (plant cells and fungal cells) also have a cell wall.\r\n' +
+      'Inside the cell is the cytoplasmic region that contains the genome (DNA), ribosomes and various sorts of inclusions.[2] The genetic material is freely found in the cytoplasm. Prokaryotes can carry extrachromosomal DNA elements called plasmids, which are usually circular. Linear bacterial plasmids have been identified in several species of spirochete bacteria, including members of the genus Borrelia notably Borrelia burgdorferi, which causes Lyme disease.[3] Though not forming a nucleus, the DNA is condensed in a nucleoid. Plasmids encode additional genes, such as antibiotic resistance genes.\r\n' +
+      "On the outside, some prokaryotes have flagella and pili that project from the cell's surface. These are structures made of proteins that facilitate movement and communication between cells.\r\n" +
+      'Eukaryotic cells\r\n' +
+      'Main article: Eukaryote\r\n' +
+      '\r\n' +
+      'Structure of a typical animal cell\r\n' +
+      '\r\n' +
+      'Structure of a typical plant cell\r\n' +
+      `Plants, animals, fungi, slime moulds, protozoa, and algae are all eukaryotic. These cells are about fifteen times wider than a typical prokaryote and can be as much as a thousand times greater in volume. The main distinguishing feature of eukaryotes as compared to prokaryotes is compartmentalization: the presence of membrane-bound organelles (compartments) in which specific activities take place. Most important among these is a cell nucleus,[2] an organelle that houses the cell's DNA. This nucleus gives the eukaryote its name, which means "true kernel (nucleus)". Some of the other differences are:\r\n` +
+      '\r\n' +
+      'The plasma membrane resembles that of prokaryotes in function, with minor differences in the setup. Cell walls may or may not be present.\r\n' +
+      'The eukaryotic DNA is organized in one or more linear molecules, called chromosomes, which are associated with histone proteins. All chromosomal DNA is stored in the cell nucleus, separated from the cytoplasm by a membrane.[2] Some eukaryotic organelles such as mitochondria also contain some DNA.\r\n' +
+      'Many eukaryotic cells are ciliated with primary cilia. Primary cilia play important roles in chemosensation, mechanosensation, and thermosensation. Each cilium may thus be "viewed as a sensory cellular antennae that coordinates a large number of cellular signaling pathways, sometimes coupling the signaling to ciliary motility or alternatively to cell division and differentiation."[4]\r\n' +
+      'Motile eukaryotes can move using motile cilia or flagella. Motile cells are absent in conifers and flowering plants.[citation needed] Eukaryotic flagella are more complex than those of prokaryotes.[5]',
+    contentType: 'text',
+    type: 'multiple-choice',
+    difficulty: 'medium',
+    level: 'high',
+    numQuestions: '4'
+  },
+  file: null
+}
+Raw OpenAI response: [
+  {
+    "question": "Who discovered cells and named them after their resemblance to small rooms in a monastery?",
+    "options": ["Robert Hooke", "Anton van Leeuwenhoek", "Matthias Jakob Schleiden", "Theodor Schwann"],
+    "correctAnswer": "Robert Hooke"
+  },
+  {
+    "question": "What is the main distinguishing feature of eukaryotic cells compared to prokaryotic cells?",
+    "options": ["Compartmentalization with membrane-bound organelles", "Lack of nucleus", "Presence of flagella", "Circular DNA structure"],
+    "correctAnswer": "Compartmentalization with membrane-bound organelles"
+  },
+  {
+    "question": "Which organelle provides energy for cell functions in eukaryotic cells?",
+    "options": ["Mitochondria", "Chloroplasts", "Ribosomes", "Endoplasmic reticulum"],
+    "correctAnswer": "Mitochondria"
+  },
+  {
+    "question": "True or False: Prokaryotic cells are generally larger in size than eukaryotic cells.",
+    "options": ["False", "True"],
+    "correctAnswer": "False"
+  }
+]
+Cleaned response text: [
+  {
+    "question": "Who discovered cells and named them after their resemblance to small rooms in a monastery?",
+    "options": ["Robert Hooke", "Anton van Leeuwenhoek", "Matthias Jakob Schleiden", "Theodor Schwann"],
+    "correctAnswer": "Robert Hooke"
+  },
+  {
+    "question": "What is the main distinguishing feature of eukaryotic cells compared to prokaryotic cells?",
+    "options": ["Compartmentalization with membrane-bound organelles", "Lack of nucleus", "Presence of flagella", "Circular DNA structure"],
+    "correctAnswer": "Compartmentalization with membrane-bound organelles"
+  },
+  {
+    "question": "Which organelle provides energy for cell functions in eukaryotic cells?",
+    "options": ["Mitochondria", "Chloroplasts", "Ribosomes", "Endoplasmic reticulum"],
+    "correctAnswer": "Mitochondria"
+  },
+  {
+    "question": "True or False: Prokaryotic cells are generally larger in size than eukaryotic cells.",
+    "options": ["False", "True"],
+    "correctAnswer": "False"
+  }
+]
+03:31:17 AM [express] POST /api/quiz/generate 200 in 3408ms :: {"id":10,"userId":null,"title":null,"c…
+03:31:17 AM [express] GET /api/quiz/10/leaderboard 500 in 3ms :: {"error":"Error fetching leaderboard…
+03:32:14 AM [express] GET /api/auth/me 401 in 0ms :: {"error":"Not authenticated"}
+03:32:22 AM [express] POST /api/extract-text 200 in 3ms
+03:32:45 AM [express] POST /api/extract-text 200 in 3ms
