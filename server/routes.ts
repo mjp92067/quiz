@@ -249,6 +249,8 @@ export function registerRoutes(app: Express) {
         return res.status(401).json({ error: "Authentication required" });
       }
 
+      console.log("[DEBUG] Getting friends for user:", req.user.id);
+
       // Get all accepted friends
       const friendsList = await db.query.friends.findMany({
         where: sql`(user_id = ${req.user.id} OR friend_id = ${req.user.id}) 
@@ -261,13 +263,29 @@ export function registerRoutes(app: Express) {
               lastName: true,
               email: true
             }
+          },
+          friend: {
+            columns: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true
+            }
           }
         }
       });
 
-      res.json(friendsList);
+      console.log("[DEBUG] Friends list query result:", JSON.stringify(friendsList, null, 2));
+      res.json(friendsList.map(f => ({
+        ...f,
+        user: f.userId === req.user!.id ? f.friend : f.user
+      })));
     } catch (error) {
-      res.status(500).json({ error: "Error fetching friends list" });
+      console.error("[ERROR] Error fetching friends list:", error);
+      res.status(500).json({ 
+        error: "Error fetching friends list",
+        details: error instanceof Error ? error.message : "Unknown error occurred"
+      });
     }
   });
 
@@ -276,6 +294,8 @@ export function registerRoutes(app: Express) {
       if (!req.user) {
         return res.status(401).json({ error: "Authentication required" });
       }
+
+      console.log("[DEBUG] Getting friend requests for user:", req.user.id);
 
       // Get pending friend requests
       const requests = await db.query.friends.findMany({
@@ -292,9 +312,14 @@ export function registerRoutes(app: Express) {
         }
       });
 
+      console.log("[DEBUG] Friend requests query result:", JSON.stringify(requests, null, 2));
       res.json(requests);
     } catch (error) {
-      res.status(500).json({ error: "Error fetching friend requests" });
+      console.error("[ERROR] Error fetching friend requests:", error);
+      res.status(500).json({ 
+        error: "Error fetching friend requests",
+        details: error instanceof Error ? error.message : "Unknown error occurred"
+      });
     }
   });
 
