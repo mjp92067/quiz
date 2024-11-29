@@ -1,0 +1,69 @@
+[TypeScript] Found 0 errors. Watching for file changes.
+12:24:35 AM [express] GET /api/auth/me 401 in 0ms :: {"error":"Not authenticated"}
+12:33:31 AM [express] POST /api/auth/login 200 in 704ms :: {"user":{"id":2,"firstName":"Paris","lastN…
+[DEBUG] Getting friend requests for user: 2
+[ERROR] Error fetching friend requests: TypeError: Cannot read properties of undefined (reading 'referencedTable')
+    at normalizeRelation (/home/runner/QuizUpAI/node_modules/src/relations.ts:564:74)
+    at PgDialect.buildRelationalQueryWithoutPK (/home/runner/QuizUpAI/node_modules/src/pg-core/dialect.ts:1240:32)
+    at QueryPromise._getQuery (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:117:23)
+    at QueryPromise._toSQL (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:134:22)
+    at <anonymous> (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:92:39)
+    at Object.startActiveSpan (/home/runner/QuizUpAI/node_modules/src/tracing.ts:27:11)
+    at QueryPromise._prepare (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:91:17)
+    at <anonymous> (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:147:16)
+    at Object.startActiveSpan (/home/runner/QuizUpAI/node_modules/src/tracing.ts:27:11)
+    at QueryPromise.execute (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:146:17)
+    at QueryPromise.then (/home/runner/QuizUpAI/node_modules/src/query-promise.ts:31:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+12:33:35 AM [express] GET /api/friends/requests 500 in 10ms :: {"error":"Error fetching friend reques…
+[DEBUG] Getting friends for user: 2
+[ERROR] Error fetching friends list: TypeError: Cannot read properties of undefined (reading 'referencedTable')
+    at normalizeRelation (/home/runner/QuizUpAI/node_modules/src/relations.ts:564:74)
+    at PgDialect.buildRelationalQueryWithoutPK (/home/runner/QuizUpAI/node_modules/src/pg-core/dialect.ts:1240:32)
+    at QueryPromise._getQuery (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:117:23)
+    at QueryPromise._toSQL (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:134:22)
+    at <anonymous> (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:92:39)
+    at Object.startActiveSpan (/home/runner/QuizUpAI/node_modules/src/tracing.ts:27:11)
+    at QueryPromise._prepare (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:91:17)
+    at <anonymous> (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:147:16)
+    at Object.startActiveSpan (/home/runner/QuizUpAI/node_modules/src/tracing.ts:27:11)
+    at QueryPromise.execute (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:146:17)
+    at QueryPromise.then (/home/runner/QuizUpAI/node_modules/src/query-promise.ts:31:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+12:33:35 AM [express] GET /api/friends 500 in 2ms :: {"error":"Error fetching friends list","details"…
+12:34:00 AM [express] POST /api/friends/request 400 in 50ms :: {"error":"Friend request already exist…
+12:34:18 AM [express] POST /api/auth/logout 200 in 2ms :: {"message":"Logged out successfully"}
+12:34:19 AM [express] GET /api/auth/me 401 in 1ms :: {"error":"Not authenticated"}
+12:34:28 AM [express] POST /api/auth/login 401 in 93ms
+12:34:35 AM [express] POST /api/auth/login 200 in 93ms :: {"user":{"id":3,"firstName":"Mikey","lastNa…
+[DEBUG] Getting friends for user: 3
+[ERROR] Error fetching friends list: TypeError: Cannot read properties of undefined (reading 'referencedTable')
+    at normalizeRelation (/home/runner/QuizUpAI/node_modules/src/relations.ts:564:74)
+    at PgDialect.buildRelationalQueryWithoutPK (/home/runner/QuizUpAI/node_modules/src/pg-core/dialect.ts:1240:32)
+    at QueryPromise._getQuery (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:117:23)
+    at QueryPromise._toSQL (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:134:22)
+    at <anonymous> (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:92:39)
+    at Object.startActiveSpan (/home/runner/QuizUpAI/node_modules/src/tracing.ts:27:11)
+    at QueryPromise._prepare (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:91:17)
+    at <anonymous> (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:147:16)
+    at Object.startActiveSpan (/home/runner/QuizUpAI/node_modules/src/tracing.ts:27:11)
+    at QueryPromise.execute (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:146:17)
+    at QueryPromise.then (/home/runner/QuizUpAI/node_modules/src/query-promise.ts:31:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+12:34:38 AM [express] GET /api/friends 500 in 1ms :: {"error":"Error fetching friends list","details"…
+[DEBUG] Getting friend requests for user: 3
+[ERROR] Error fetching friend requests: TypeError: Cannot read properties of undefined (reading 'referencedTable')
+    at normalizeRelation (/home/runner/QuizUpAI/node_modules/src/relations.ts:564:74)
+    at PgDialect.buildRelationalQueryWithoutPK (/home/runner/QuizUpAI/node_modules/src/pg-core/dialect.ts:1240:32)
+    at QueryPromise._getQuery (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:117:23)
+    at QueryPromise._toSQL (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:134:22)
+    at <anonymous> (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:92:39)
+    at Object.startActiveSpan (/home/runner/QuizUpAI/node_modules/src/tracing.ts:27:11)
+    at QueryPromise._prepare (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:91:17)
+    at <anonymous> (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:147:16)
+    at Object.startActiveSpan (/home/runner/QuizUpAI/node_modules/src/tracing.ts:27:11)
+    at QueryPromise.execute (/home/runner/QuizUpAI/node_modules/src/pg-core/query-builders/query.ts:146:17)
+    at QueryPromise.then (/home/runner/QuizUpAI/node_modules/src/query-promise.ts:31:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+12:34:38 AM [express] GET /api/friends/requests 500 in 2ms :: {"error":"Error fetching friend request…
+12:34:49 AM [express] POST /api/friends/request 400 in 44ms :: {"error":"Friend request already exist…

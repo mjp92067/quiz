@@ -256,22 +256,8 @@ export function registerRoutes(app: Express) {
         where: sql`(user_id = ${req.user.id} OR friend_id = ${req.user.id}) 
                   AND status = 'accepted'`,
         with: {
-          user: {
-            columns: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true
-            }
-          },
-          friend: {
-            columns: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true
-            }
-          }
+          user: true,
+          friend: true
         }
       });
 
@@ -301,14 +287,8 @@ export function registerRoutes(app: Express) {
       const requests = await db.query.friends.findMany({
         where: sql`friend_id = ${req.user.id} AND status = 'pending'`,
         with: {
-          user: {
-            columns: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true
-            }
-          }
+          user: true,
+          friend: true
         }
       });
 
