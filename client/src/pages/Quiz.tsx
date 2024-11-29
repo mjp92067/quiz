@@ -48,6 +48,7 @@ type QuizFormData = z.infer<typeof quizSchema>;
 export function Quiz() {
   const { toast } = useToast();
   const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<string>("text");
 
   const form = useForm<QuizFormData>({
@@ -70,22 +71,71 @@ export function Quiz() {
       // Update form values
       form.setValue("file", file);
       form.setValue("contentType", file.type.startsWith("image/") ? "image" : "document");
+      setFileName(file.name);
 
-      // Create preview for images
+      // Handle image files
       if (file.type.startsWith("image/")) {
         const reader = new FileReader();
-        reader.onloadend = () => {
+        reader.onloadend = async () => {
           setFilePreview(reader.result as string);
+          
+          // Send image to OpenAI Vision API for text extraction
+          try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'vision');
+            
+            const response = await fetch("/api/extract-text", {
+              method: "POST",
+              body: formData
+            });
+            
+            if (!response.ok) throw new Error("Failed to extract text from image");
+            
+            const data = await response.json();
+            form.setValue("content", data.text);
+          } catch (error) {
+            toast({
+              title: "Error",
+              description: "Failed to extract text from image",
+              variant: "destructive"
+            });
+          }
         };
         reader.readAsDataURL(file);
       } else {
         setFilePreview(null);
-      }
-
-      // For text files, read content
-      if (file.type === "text/plain") {
-        const text = await file.text();
-        form.setValue("content", text);
+        
+        // Handle document files
+        if (file.type === "text/plain") {
+          const text = await file.text();
+          form.setValue("content", text);
+        } else if (file.type === "application/pdf" || file.type.includes("document")) {
+          // Show loading state for document processing
+          toast({
+            title: "Processing Document",
+            description: "Please wait while we process your document..."
+          });
+          
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('type', 'document');
+          
+          const response = await fetch("/api/extract-text", {
+            method: "POST",
+            body: formData
+          });
+          
+          if (!response.ok) throw new Error("Failed to process document");
+          
+          const data = await response.json();
+          form.setValue("content", data.text);
+          
+          toast({
+            title: "Success",
+            description: "Document processed successfully!"
+          });
+        }
       }
     } catch (error) {
       toast({
@@ -94,6 +144,17 @@ export function Quiz() {
         variant: "destructive"
       });
     }
+  };
+
+  const handleDeleteFile = () => {
+    setFilePreview(null);
+    setFileName(null);
+    form.setValue("file", undefined);
+    form.setValue("content", "");
+    
+    // Reset file input
+    const fileInput = document.getElementById("image-upload") as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
   };
 
   const generateQuiz = useMutation({
@@ -192,12 +253,30 @@ export function Quiz() {
                               id="document-upload"
                             />
                             <label htmlFor="document-upload" className="cursor-pointer text-center">
-                              <p className="text-sm text-muted-foreground">
-                                Drop your document here or click to upload
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-2">
-                                Supported formats: PDF, DOCX, TXT (max 5MB)
-                              </p>
+                              {fileName ? (
+                                <div className="flex flex-col items-center">
+                                  <p className="text-sm font-medium">{fileName}</p>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleDeleteFile();
+                                    }}
+                                    className="mt-2 text-sm text-destructive hover:text-destructive/90"
+                                  >
+                                    Remove file
+                                  </button>
+                                </div>
+                              ) : (
+                                <>
+                                  <p className="text-sm text-muted-foreground">
+                                    Drop your document here or click to upload
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mt-2">
+                                    Supported formats: PDF, DOCX, TXT (max 5MB)
+                                  </p>
+                                </>
+                              )}
                             </label>
                           </div>
                         </FormControl>
@@ -225,11 +304,23 @@ export function Quiz() {
                             />
                             <label htmlFor="image-upload" className="cursor-pointer text-center">
                               {filePreview ? (
-                                <img
-                                  src={filePreview}
-                                  alt="Preview"
-                                  className="max-h-[180px] object-contain"
-                                />
+                                <div className="relative">
+                                  <img
+                                    src={filePreview}
+                                    alt="Preview"
+                                    className="max-h-[180px] object-contain"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleDeleteFile();
+                                    }}
+                                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
                               ) : (
                                 <>
                                   <p className="text-sm text-muted-foreground">
@@ -361,7 +452,6 @@ export function Quiz() {
                             <RadioGroupItem
                               value={option}
                               id={`q${index}-${optionIndex}`}
-                              disabled
                             />
                             <Label htmlFor={`q${index}-${optionIndex}`} className="ml-2">
                               {option}
