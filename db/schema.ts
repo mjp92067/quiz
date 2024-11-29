@@ -52,22 +52,28 @@ export const leaderboard = pgTable("leaderboard", {
 
 export const friends = pgTable("friends", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  friendId: integer("friend_id").notNull().references(() => users.id),
-  status: text("status").notNull(), // pending, accepted, rejected
+  userId: integer("user_id").notNull(),
+  friendId: integer("friend_id").notNull(),
+  status: text("status").notNull().default('pending'),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });
 
-// Define relations
+export const usersRelations = relations(users, ({ many }) => ({
+  sentFriendRequests: many(friends, { relationName: "userFriends" }),
+  receivedFriendRequests: many(friends, { relationName: "friendUsers" })
+}));
+
 export const friendsRelations = relations(friends, ({ one }) => ({
   user: one(users, {
     fields: [friends.userId],
     references: [users.id],
+    relationName: "userFriends"
   }),
   friend: one(users, {
     fields: [friends.friendId],
     references: [users.id],
+    relationName: "friendUsers"
   }),
 }));
 
