@@ -45,12 +45,30 @@ Format each question as a JSON object with:
 
   try {
     const text = response.choices[0]?.message?.content || '';
-    // Extract the JSON array from the response
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      throw new Error("No valid JSON array found in response");
+    // Clean and parse the response
+    const cleanedText = text
+      .replace(/```json\s*/g, '')  // Remove JSON code block markers
+      .replace(/```\s*/g, '')      // Remove remaining code block markers
+      .trim();                     // Remove extra whitespace
+
+    let questions;
+    try {
+      // Try parsing the entire response first
+      questions = JSON.parse(cleanedText);
+    } catch {
+      // If that fails, try to extract just the array
+      const jsonMatch = cleanedText.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) {
+        throw new Error("No valid JSON array found in response");
+      }
+      questions = JSON.parse(jsonMatch[0]);
     }
-    const questions = JSON.parse(jsonMatch[0]);
+
+    // Validate the questions array
+    if (!Array.isArray(questions)) {
+      throw new Error("Response is not an array of questions");
+    }
+
     return questions;
   } catch (error) {
     console.error("Error parsing OpenAI response:", error);
