@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { TemplateSelect } from "@/components/TemplateSelect";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
@@ -336,9 +337,22 @@ export function Quiz() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={generateQuiz.isPending}>
-                {generateQuiz.isPending ? "Generating..." : "Generate Quiz"}
-              </Button>
+              <div className="space-y-6">
+                <Card className="p-4">
+                  <TemplateSelect 
+                    onSelect={(template) => {
+                      form.setValue("type", template.type as any);
+                      form.setValue("difficulty", template.difficulty as any);
+                      form.setValue("level", template.level as any);
+                      form.setValue("numQuestions", template.numQuestions);
+                    }} 
+                  />
+                </Card>
+                
+                <Button type="submit" className="w-full" disabled={generateQuiz.isPending}>
+                  {generateQuiz.isPending ? "Generating..." : "Generate Quiz"}
+                </Button>
+              </div>
             </form>
           </Form>
         </Card>

@@ -14,9 +14,24 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow()
 });
 
+export const quizTemplates = pgTable("quiz_templates", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  description: text("description"),
+  type: text("type").notNull(), // multiple-choice, true-false, fill-blank
+  difficulty: text("difficulty").notNull(), // easy, medium, hard
+  level: text("level").notNull(), // elementary, middle, high, university
+  structure: jsonb("structure").notNull(), // Template structure with placeholder questions
+  numQuestions: integer("num_questions").notNull(),
+  isPublic: boolean("is_public").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
 export const quizzes = pgTable("quizzes", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id").references(() => users.id),
+  templateId: integer("template_id").references(() => quizTemplates.id),
   title: text("title"),
   content: text("content").notNull(),
   contentType: text("content_type").notNull(), // text, document, image
@@ -85,6 +100,10 @@ export type User = z.infer<typeof selectUserSchema>;
 export const insertQuizSchema = createInsertSchema(quizzes);
 export const selectQuizSchema = createSelectSchema(quizzes);
 export type InsertQuiz = z.infer<typeof insertQuizSchema>;
+export const insertQuizTemplateSchema = createInsertSchema(quizTemplates);
+export const selectQuizTemplateSchema = createSelectSchema(quizTemplates);
+export type InsertQuizTemplate = z.infer<typeof insertQuizTemplateSchema>;
+export type QuizTemplate = z.infer<typeof selectQuizTemplateSchema>;
 export type Quiz = z.infer<typeof selectQuizSchema>;
 
 export const insertAttemptSchema = createInsertSchema(attempts);

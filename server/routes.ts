@@ -65,6 +65,19 @@ export function registerRoutes(app: Express) {
   });
 
   // Quiz routes
+  // Quiz template routes
+  app.get("/api/quiz/templates", async (req, res) => {
+    try {
+      const templates = await db.query.quizTemplates.findMany({
+        orderBy: (quizTemplates, { asc }) => [asc(quizTemplates.name)]
+      });
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching quiz templates:", error);
+      res.status(500).json({ error: "Failed to fetch quiz templates" });
+    }
+  });
+
   app.post("/api/quiz/generate", upload.single('file'), async (req, res) => {
     console.log('Received form data:', {
       body: req.body,
