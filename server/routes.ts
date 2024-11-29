@@ -171,16 +171,29 @@ export function registerRoutes(app: Express) {
   // Friend system routes
   app.post("/api/friends/request", async (req, res) => {
     try {
-      const { friendId } = req.body;
+      const { friendEmail } = req.body;
       
       if (!req.user) {
         return res.status(401).json({ error: "Authentication required" });
       }
 
+      // Find friend by email
+      const friend = await db.query.users.findFirst({
+        where: eq(users.email, friendEmail)
+      });
+
+      if (!friend) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (friend.id === req.user.id) {
+        return res.status(400).json({ error: "Cannot send friend request to yourself" });
+      }
+
       // Check if friend request already exists
       const existingRequest = await db.query.friends.findFirst({
-        where: sql`(user_id = ${req.user.id} AND friend_id = ${friendId}) 
-                  OR (user_id = ${friendId} AND friend_id = ${req.user.id})`
+        where: sql`(user_id = ${req.user.id} AND friend_id = ${friend.id}) 
+                  OR (user_id = ${friend.id} AND friend_id = ${req.user.id})`
       });
 
       if (existingRequest) {
@@ -193,7 +206,7 @@ export function registerRoutes(app: Express) {
       // Create friend request
       const request = await db.insert(friends).values({
         userId: req.user.id,
-        friendId: friendId,
+        friendId: friend.id,
         status: "pending"
       }).returning();
 

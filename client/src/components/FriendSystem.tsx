@@ -62,11 +62,11 @@ export function FriendSystem() {
 
   // Send friend request
   const sendRequest = useMutation({
-    mutationFn: async (friendId: number) => {
+    mutationFn: async (friendEmail: string) => {
       const response = await fetch("/api/friends/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ friendId }),
+        body: JSON.stringify({ friendEmail }),
         credentials: "include"
       });
       if (!response.ok) {
@@ -131,7 +131,7 @@ export function FriendSystem() {
             />
             <Button 
               onClick={() => {
-                if (friendEmail) sendRequest.mutate(parseInt(friendEmail));
+                if (friendEmail) sendRequest.mutate(friendEmail);
               }}
               disabled={sendRequest.isPending || !friendEmail}
             >
